@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using BaseballStats.Common;
+using BaseballStats.DataAccess;
 
 namespace BaseballStats.Controllers
 {
@@ -25,6 +27,12 @@ namespace BaseballStats.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        public ActionResult PlayerSearch()
+        {
+            ViewBag.Message = "Test";
+            return View(DataAccess.Common.TestGetPlayerStats());
         }
     }
 }
