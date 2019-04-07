@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewBag.Title = "PlayerSearchInput";
+    Layout = "~/Views/Shared/_LayoutDataTable.cshtml";
+    @model BaseballStats.Models.PlayerSearchInputModel
+}
+
+<h2>PlayerSearchInput</h2>
+
+<div class="row">
+    @using (Html.BeginForm("PlayerSearchInfo", "Home", FormMethod.Post))
+    {
+        @Html.LabelFor(model => model.PlayerFirstName)
+        @Html.TextBoxFor(model => model.PlayerFirstName)
+        @Html.LabelFor(model => model.PlayerLastName)
+        @Html.TextBoxFor(model => model.PlayerLastName)
+        @Html.ValidationMessageFor(model => model.PlayerLastName)
+        <button type="submit">Search</button>
+    }
+</div>

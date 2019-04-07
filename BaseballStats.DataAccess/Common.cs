@@ -25,7 +25,28 @@ namespace BaseballStats.DataAccess
             returnTable = dt.JsonToDataTable(_responseString);
             return returnTable;
         }
-        
+
+        public static System.Data.DataTable PromptedGetPlayerStats(string _firstName, string _lastName)
+        {
+            System.Data.DataTable returnTable = new System.Data.DataTable();
+            string _responseString = string.Empty;
+
+            if (_firstName != null && _firstName != "" && _firstName != "NOTVALID")
+            {
+                string _playerNameStr = _firstName + " " + _lastName;
+                _responseString = SendRequest("PLAYERSEARCH", "Y", _playerNameStr);
+            }
+            else
+            {
+                string _playerNameStr = _lastName;
+                _responseString = SendRequest("PLAYERSEARCH", "Y", _playerNameStr);
+            }
+
+            Common dt = new Common();
+            returnTable = dt.JsonToDataTable(_responseString);
+            return returnTable;
+        }
+
         public static string SendRequest(string _requestId, string _param1, string _param2 = "", string _param3 = "")
         {
             WebResponse response = null;
@@ -122,11 +143,14 @@ namespace BaseballStats.DataAccess
 
                         //_responseString = _responseString.Replace("\"", "");
                         dynamic _responseDynamic = JsonConvert.DeserializeObject(_responseString);
-                        _responseString = JsonConvert.SerializeObject(_responseDynamic, Newtonsoft.Json.Formatting.Indented);
+                        _responseString = Convert.ToString(_responseDynamic);
+                        //_responseString = JsonConvert.SerializeObject(_responseDynamic, Newtonsoft.Json.Formatting.Indented);
                         //int pFrom = _responseString.IndexOf("row:") + "row:".Length;
                         int pFrom = _responseString.IndexOf("row\":") + "row\":".Length;
+                        //int pFrom = _responseString.IndexOf("{") + "{".Length;
                         //int pFrom = _responseString.IndexOf("row:") + "row:".Length;
                         int pTo = _responseString.LastIndexOf("}") + "}".Length;
+                        //int pTo = _responseString.IndexOf("}") + "}".Length;
                         int pToCalc = 2;
                         if (pTo - pFrom <= 0)
                         {
@@ -139,18 +163,38 @@ namespace BaseballStats.DataAccess
 
                         if (_responseString.Length > 1)
                         {
-                            _responseString = _responseString.Substring(pFrom, pToCalc);
-                            _responseString = _responseString.Replace("}", "");
-                            StringBuilder updatedResponseStr = new StringBuilder();
-                            string _startJson = "\"Output\": [";
-                            //_startJson = _startJson.Replace("\"", "");
-                            updatedResponseStr.Append(_startJson);
-                            updatedResponseStr.Append(_responseString);
-                            updatedResponseStr.Append("]");
-                            //updatedResponseStr.Append("}");
-                            //dynamic parsedString = JsonConvert.DeserializeObject(updatedResponseStr.ToString());
-                            //_finalResponseString = JsonConvert.SerializeObject(parsedString, Newtonsoft.Json.Formatting.Indented);
-                            _finalResponseString = updatedResponseStr.ToString();
+                            //JObject jsonObj = JObject.Parse(_responseString);
+                            //////jsonObj = (JObject)_responseString;
+                            //////JArray rows = (JArray)jsonObj.SelectToken("row");
+                            /*var rows = jsonObj.SelectTokens("search_player_all.queryResults[*].row[*]")
+                                .Select(o => o.First)
+                                .Cast<JProperty>()
+                                .Select(o => o.Name);*/
+                            //int _rowsCount = rows.Count();
+                            //foreach (JToken row in rows)
+                            //{
+                                _responseString = _responseString.Substring(pFrom, pToCalc);
+                                _responseString = _responseString.Replace("}", "");
+                                //_responseString = _responseString.Replace("}}}", "");
+                                //_responseString = _responseString.Replace("}}", "");
+                                //_responseString = _responseString.Replace(_responseString.LastIndexOf("}"), "");
+                                _responseString = _responseString.Replace("\r\n", "");
+                                _responseString = _responseString.Replace(" ", "");
+                                StringBuilder updatedResponseStr = new StringBuilder();
+                                //string _startJson = "\"Output\": [";
+                                ////_startJson = _startJson.Replace("\"", "");
+                                //updatedResponseStr.Append(_startJson);
+                                updatedResponseStr.Append("[");
+                                updatedResponseStr.Append(_responseString);
+                                updatedResponseStr.Append("}");
+                                updatedResponseStr.Append("]");
+                                //updatedResponseStr.Append("}");
+                                dynamic parsedString = JsonConvert.DeserializeObject(updatedResponseStr.ToString());
+                                _finalResponseString = JsonConvert.SerializeObject(parsedString, Newtonsoft.Json.Formatting.Indented);
+                                //_finalResponseString = updatedResponseStr.ToString();
+                                //_finalResponseString = _responseString;
+                                ////_finalResponseString = Convert.ToString(_responseDynamic);
+                            //}
                         }
                         //_finalResponseString = _responseString;
 

@@ -22,3 +22,10 @@ select,
 textarea {
     max-width: 280px;
 }
+
+/*Fit table to content*/
+.table td.fit, 
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
