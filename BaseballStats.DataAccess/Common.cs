@@ -120,10 +120,12 @@ namespace BaseballStats.DataAccess
                         string _responseString = readStream.ReadToEnd();
                         //_finalResponseString = _responseString;
 
-                        _responseString = _responseString.Replace("\"", "");
+                        //_responseString = _responseString.Replace("\"", "");
+                        dynamic _responseDynamic = JsonConvert.DeserializeObject(_responseString);
+                        _responseString = JsonConvert.SerializeObject(_responseDynamic, Newtonsoft.Json.Formatting.Indented);
                         //int pFrom = _responseString.IndexOf("row:") + "row:".Length;
-                        //int pFrom = _responseString.IndexOf("row\":") + "row\":".Length;
-                        int pFrom = _responseString.IndexOf("row:") + "row:".Length;
+                        int pFrom = _responseString.IndexOf("row\":") + "row\":".Length;
+                        //int pFrom = _responseString.IndexOf("row:") + "row:".Length;
                         int pTo = _responseString.LastIndexOf("}") + "}".Length;
                         int pToCalc = 2;
                         if (pTo - pFrom <= 0)
@@ -140,12 +142,14 @@ namespace BaseballStats.DataAccess
                             _responseString = _responseString.Substring(pFrom, pToCalc);
                             _responseString = _responseString.Replace("}", "");
                             StringBuilder updatedResponseStr = new StringBuilder();
-                            string _startJson = "{ \"Output\": [";
-                            _startJson = _startJson.Replace("\"", "");
+                            string _startJson = "\"Output\": [";
+                            //_startJson = _startJson.Replace("\"", "");
                             updatedResponseStr.Append(_startJson);
                             updatedResponseStr.Append(_responseString);
                             updatedResponseStr.Append("]");
-                            updatedResponseStr.Append("}");
+                            //updatedResponseStr.Append("}");
+                            //dynamic parsedString = JsonConvert.DeserializeObject(updatedResponseStr.ToString());
+                            //_finalResponseString = JsonConvert.SerializeObject(parsedString, Newtonsoft.Json.Formatting.Indented);
                             _finalResponseString = updatedResponseStr.ToString();
                         }
                         //_finalResponseString = _responseString;
@@ -241,14 +245,14 @@ namespace BaseballStats.DataAccess
             System.Data.DataTable jsonResponseTable = new System.Data.DataTable();
             try
             {
-                //jsonResponseTable = (System.Data.DataTable)JsonConvert.DeserializeObject(_jsonToConvert, (typeof(System.Data.DataTable)));
+                jsonResponseTable = (System.Data.DataTable)JsonConvert.DeserializeObject(_jsonToConvert, (typeof(System.Data.DataTable)));
                 //jsonResponseTable = JsonConvert.DeserializeAnonymousType(_jsonToConvert, new { Makes = default(System.Data.DataTable) }).Makes;
 
-                XmlDocument xd1 = new XmlDocument();
-                xd1 = (XmlDocument)JsonConvert.DeserializeXmlNode(_jsonToConvert, "root");
-                DataSet jsonDataSet = new DataSet();
-                jsonDataSet.ReadXml(new XmlNodeReader(xd1));
-                jsonResponseTable = jsonDataSet.Tables[0];
+                //XmlDocument xd1 = new XmlDocument();
+                //xd1 = (XmlDocument)JsonConvert.DeserializeXmlNode(_jsonToConvert, "root");
+                //DataSet jsonDataSet = new DataSet();
+                //jsonDataSet.ReadXml(new XmlNodeReader(xd1));
+                //jsonResponseTable = jsonDataSet.Tables[0];
 
             }
             catch (Exception ex)
